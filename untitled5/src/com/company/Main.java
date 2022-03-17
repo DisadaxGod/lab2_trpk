@@ -2,21 +2,11 @@ package com.company;
 
 public class Main {
 
-    public static final int N = 1000;
-
     public static void main(String[] args) {
-        // создаем буфферы
-        Buffer<Integer> genBuffer = new Buffer<>(N);
-        Buffer<Integer> funBuffer = new Buffer<>(N);
-
-        Thread1 generator = new Thread1(genBuffer);
-        Thread2 function = new Thread2(funBuffer, generator);
-        Thread3 print = new Thread3(function);
-
         // создаем потоки
-        Thread thread1 = new Thread(generator);
-        Thread thread2 = new Thread(function);
-        Thread thread3 = new Thread(print);
+        Thread1 thread1 = new Thread1();
+        Thread2 thread2 = new Thread2(thread1);
+        Thread3 thread3 = new Thread3(thread2);
 
         // запускаем потоки
         thread1.start();

@@ -1,16 +1,17 @@
 package com.company;
 
-public class Thread1 implements Runnable  {
+import java.util.ArrayList;
 
-    private Buffer<Integer> buffer1;
+public class Thread1 extends Thread  {
 
-    public Buffer<Integer> getBuffer1() {
+    private ArrayList<Integer> buffer1 = new ArrayList<>();
+    private final int bufferSize = 1000;
+
+    public ArrayList<Integer> getBuffer1() {
         return buffer1;
     }
 
-    public Thread1(Buffer<Integer> buffer1){
-        this.buffer1 = buffer1;
-    }
+
     //генератор случайных чисел
     public static int rnd(int min, int max)
     {
@@ -24,25 +25,28 @@ public class Thread1 implements Runnable  {
 
         final int min = 100; // Минимальное число для диапазона
         final int max = 105; // Максимальное число для диапазона
-        for (int i = 0; i <1002; i++){
+        for (int i = 0; i <1001; i++){
             synchronized (buffer1) {
 
                 // если буфер полон, ждем сигнала
-                while (buffer1.isFull()) {
+                if (buffer1.size() == bufferSize) {
                     try {
                         buffer1.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }else {
+                    //генерируем числа
+                    final int rnd = rnd(min, max);
+                    //добавляем числа в 1 буффер
+                    buffer1.add(rnd);
+                    System.out.println("Поток 1, сгенерированно число: " + rnd + " Количество " + i);
+                    // когда буфер заполнен, оповещаем об этом
+                    buffer1.notifyAll();
                 }
-                //генерируем числа
-                final int rnd = rnd(min, max);
-                //добавляем числа в 1 буффер
-                buffer1.add(rnd);
-                System.out.println("Поток 1, сгенерированно число: " + rnd);
-                // когда буфер заполнен, оповещаем об этом
-                buffer1.notifyAll();
-        }
+
+            }
+
         }
         System.out.println("Thread1_End");
     }
